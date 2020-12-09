@@ -1,0 +1,37 @@
+version: "3.6"
+services:
+    rabbitmq:
+        container_name: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672                 
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest        
+        image: rabbitmq:3-management
+                
+    customerapi:
+        container_name: customerapi
+        ports:
+            - 32789:80
+            - 32788:443                 
+        image: customerapi
+        build:
+          context: CustomerApi
+          dockerfile: Dockerfile        
+        restart: on-failure        
+        depends_on:
+            - rabbitmq
+            
+    orderapi:
+        container_name: orderapi
+        ports:
+            - 32787:80
+            - 32786:443              
+        image: orderapi 
+        build:
+          context: OrderApi
+          dockerfile: Dockerfile           
+        restart: on-failure
+        depends_on:
+            - rabbitmq            
